@@ -20,7 +20,7 @@ class Adder:
     def __init__(self, client, logger=None):
         self.client = client
         self.logger = logger or Logger()
-        self.batch_delay = BatchDelay(batch_size=10)
+        self.batch_delay = BatchDelay(batch_size=5)
 
     async def is_user_in_group(self, user_username, target_group):
         """Check if user is already in the group"""
@@ -47,8 +47,10 @@ class Adder:
             current = 0
 
             Display.print_info(f"Starting to add {total} members to {group_username}")
-            Display.print_warning("Using random delay between 45-90 seconds per user")
-            Display.print_warning("Additional 2-5 minutes delay every 10 successful additions")
+            Display.print_warning("Using random delay between 120-180 seconds per user")
+            Display.print_warning("Additional 10-15 minutes delay every 5 successful additions")
+            Display.print_warning("Taking initial warm-up delay (5 minutes)...")
+            await Delay.random_delay(300, 300, use_spinner=True)  # 5 minutes warm-up
             print()  # Add space before progress starts
 
             for index, user in df.iterrows():
@@ -69,7 +71,7 @@ class Adder:
                     await self.client(InviteToChannelRequest(target_group, [user_to_add]))
                     
                     # Verify if user was actually added
-                    await asyncio.sleep(2)  # Wait a bit for the addition to take effect
+                    await Delay.verify_delay()
                     if await self.is_user_in_group(user['username'], target_group):
                         success += 1
                         log_msg = f"Successfully added {user['username']} to {group_username} [{current}/{total}]"

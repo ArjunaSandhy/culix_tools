@@ -5,7 +5,7 @@ from rich.progress import Progress
 from .display import Display
 
 class BatchDelay:
-    def __init__(self, batch_size=10):
+    def __init__(self, batch_size=5):
         self.successful_count = 0
         self.batch_size = batch_size
 
@@ -15,11 +15,11 @@ class BatchDelay:
         
         # Every batch_size successful operations, add a longer delay
         if self.successful_count % self.batch_size == 0:
-            Display.print_warning(f"{self.batch_size} operations completed. Taking a longer break (5-8 minutes)...")
-            await Delay.random_delay(300, 480, use_spinner=True)  # 5-8 minutes
+            Display.print_warning(f"{self.batch_size} operations completed. Taking a longer break (10-15 minutes)...")
+            await Delay.random_delay(600, 900, use_spinner=True)  # 10-15 minutes
         else:
-            # Random delay between 80-150 seconds for each operation
-            await Delay.random_delay(80, 150, use_spinner=True)  # 80-150 seconds
+            # Random delay between 120-180 seconds for each operation
+            await Delay.random_delay(120, 180, use_spinner=True)  # 2-3 minutes
 
 class Delay:
     @staticmethod
@@ -48,9 +48,14 @@ class Delay:
                     progress.update(task, advance=1)
 
     @staticmethod
+    async def verify_delay():
+        """Short delay for verifying member addition (2-5 seconds)"""
+        await Delay.random_delay(2, 5, use_spinner=True)
+
+    @staticmethod
     async def skip_delay(use_spinner=True):
-        """Handle delay after skipping a user (30-60 seconds)"""
-        await Delay.random_delay(30, 60, use_spinner)
+        """Handle delay after skipping a user (60-90 seconds)"""
+        await Delay.random_delay(60, 90, use_spinner)  # Increased from 30-60 to 60-90
 
     @staticmethod
     async def flood_wait(seconds, use_spinner=True):
