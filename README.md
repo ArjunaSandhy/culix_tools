@@ -12,7 +12,7 @@ Telegram member scraper dan adder tool dengan fitur otomatis.
 
 1. Clone atau upload kode ke VPS:
 ```bash
-git clone <repository-url>
+git clone https://github.com/ArjunaSandhy/culix.git
 cd culix
 ```
 
