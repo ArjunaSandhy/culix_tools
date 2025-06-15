@@ -1,0 +1,9 @@
+telethon==1.32.1
+rich==13.7.0
+colorama==0.4.6
+pyfiglet==1.0.2
+InquirerPy==0.3.4
+python-dotenv==1.0.1
+pandas==2.2.1
+tqdm==4.66.2
+aioconsole==0.7.0 
