@@ -28,6 +28,12 @@ var/
 venv/
 ENV/
 
+# Application specific
+session/
+logs/
+output/
+config/
+
 # IDE
 .idea/
 .vscode/
