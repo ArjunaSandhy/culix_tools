@@ -24,9 +24,15 @@ class Display:
         # Create banner
         f = Figlet(font='bulbhead')
         banner = f.renderText('CULIX-TOOLS')
+        
+        # Get terminal width with fallback
+        try:
+            terminal_width = os.get_terminal_size().columns
+        except OSError:
+            terminal_width = 80  # Default fallback width
+        
         # Split banner into lines and center each line
         banner_lines = banner.split('\n')
-        terminal_width = os.get_terminal_size().columns
         centered_banner = '\n'.join(line.center(terminal_width) for line in banner_lines if line.strip())
         console.print(f"[{THEME_COLOR}]{centered_banner}[/]")
         
