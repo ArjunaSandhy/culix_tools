@@ -4,6 +4,7 @@ from telethon.sync import TelegramClient
 from utils import Display, Logger
 from .scraper import Scraper
 from .adder import Adder
+from .filter import Filter
 
 class TelegramHandler:
     def __init__(self):
@@ -12,6 +13,7 @@ class TelegramHandler:
         self.logger = Logger()
         self.scraper = None
         self.adder = None
+        self.filter = None
 
     def load_config(self):
         """Load configuration from config.json"""
@@ -48,6 +50,7 @@ class TelegramHandler:
         # Initialize components
         self.scraper = Scraper(self.client, self.logger)
         self.adder = Adder(self.client, self.logger)
+        self.filter = Filter(self.client, self.logger)
         
         return True
 
@@ -58,6 +61,10 @@ class TelegramHandler:
     async def add_members(self, group_username, csv_file):
         """Add members to target group"""
         await self.adder.add_members(group_username, csv_file)
+
+    async def filter_members(self, group_username, csv_file):
+        """Filter members that are not in target group"""
+        return await self.filter.filter_members(group_username, csv_file)
 
     async def view_logs(self):
         """Display recent log contents (last 100 lines)"""

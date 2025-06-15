@@ -27,7 +27,7 @@ async def main():
             choices=[
                 Choice("1", "→ [SCRAPER] COLLECT MEMBERS FROM GROUP"),
                 Choice("2", "→ [ADDER] ADD MEMBERS TO YOUR GROUP"),
-                Choice("3", "→ [FILTER] FILTER MEMBERS NOT IN GROUP"),
+                Choice("3", "→ [FILTER] CHECK MEMBERS NOT IN TARGET GROUP"),
                 Choice("4", "→ [LOGS] VIEW LAST 100 ACTIVITIES"),
                 Choice("5", "→ [SHUTDOWN] STOP APPLICATION")
             ],
@@ -78,7 +78,7 @@ async def main():
             ).execute_async()
 
             group_username = await inquirer.text(
-                message="Enter group username to check against (without @):",
+                message="Enter target group username (without @):",
                 validate=lambda x: len(x) > 0
             ).execute_async()
 

@@ -1,4 +1,4 @@
-from .handler import TelegramHandler
+from .client import TelegramHandler
 from .scraper import Scraper
 from .adder import Adder
 from .filter import Filter
