@@ -12,11 +12,11 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy application code
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p output sessions logs config
+RUN mkdir -p output logs config
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1

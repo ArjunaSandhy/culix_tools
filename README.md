@@ -1,80 +1,147 @@
-# CULIX TOOLS
+# CULIX-TOOLS
 
-A professional CLI tool for Telegram member management with green neon aesthetics. Built with Python and Telethon.
+CULIX-TOOLS adalah aplikasi CLI (Command Line Interface) untuk manajemen grup Telegram yang memungkinkan Anda untuk mengumpulkan member dari grup publik dan menambahkan mereka ke grup Anda.
 
-## Features
+## 🚀 Fitur
 
-- Member scraping from public groups
-- Member adding to target groups
-- Activity logging
-- Professional CLI interface with progress tracking
-- Smart delay system to avoid rate limits
+- 📥 **Scraper Member**: Mengumpulkan member dari grup Telegram publik
+- 📤 **Adder Member**: Menambahkan member ke grup Anda secara otomatis
+- 📊 **Sistem Log**: Pencatatan aktivitas lengkap
+- 🔄 **Delay System**: Sistem delay pintar untuk menghindari batasan Telegram
+- 💻 **CLI Interface**: Antarmuka command line yang mudah digunakan
 
-## Docker Setup
+## 📋 Persyaratan
 
-### Prerequisites
+- Python 3.9 atau lebih tinggi
+- Telethon
+- Rich
+- Pandas
+- InquirerPy
 
-- Docker installed on your system
-- A Telegram API ID and API Hash (get from https://my.telegram.org/apps)
+## 🛠️ Instalasi
 
-### Building the Docker Image
+### Menggunakan Python
 
+1. Clone repository:
+```bash
+git clone https://github.com/username/culix-tools.git
+cd culix-tools
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Jalankan aplikasi:
+```bash
+python main.py
+```
+
+### Menggunakan Docker
+
+1. Build image:
 ```bash
 docker build -t culix-tools .
 ```
 
-### Running the Container
-
+2. Jalankan container:
 ```bash
-docker run -it \
-    -v $(pwd)/sessions:/app/sessions \
-    -v $(pwd)/output:/app/output \
-    -v $(pwd)/logs:/app/logs \
-    -v $(pwd)/config:/app/config \
-    culix-tools
+docker run -d \
+  --name culix-tools \
+  --restart unless-stopped \
+  -v $(pwd)/output:/app/output \
+  -v $(pwd)/logs:/app/logs \
+  -v $(pwd)/config:/app/config \
+  culix-tools
 ```
 
-The container uses volume mounts to persist data:
-- `/app/sessions`: Telegram session files
-- `/app/output`: Scraped member lists
-- `/app/logs`: Activity logs
-- `/app/config`: Configuration files
+## 📝 Konfigurasi
 
-### First Run Setup
+1. Buat file `config/config.json`:
+```json
+{
+    "api_id": "YOUR_API_ID",
+    "api_hash": "YOUR_API_HASH",
+    "phone": "YOUR_PHONE_NUMBER"
+}
+```
 
-1. On first run, you'll need to enter your Telegram API credentials
-2. You'll then be prompted to enter your phone number and verification code
-3. After authentication, the session will be saved for future use
+2. Dapatkan `api_id` dan `api_hash` dari:
+   - Kunjungi https://my.telegram.org
+   - Login dan buat aplikasi baru
+   - Salin API ID dan API Hash
 
-## Usage
+## 💡 Penggunaan
 
-The tool provides an interactive menu with the following options:
+### Menu Utama
+1. **[SCRAPER]** - Mengumpulkan member dari grup
+   - Masukkan username grup (tanpa @)
+   - Hasil akan disimpan dalam format CSV di folder `output`
 
-1. **[SCRAPER]** Collect members from a group
-   - Enter the source group username (without @)
-   - Members will be saved to a CSV file in the output directory
+2. **[ADDER]** - Menambahkan member ke grup
+   - Pilih file CSV hasil scraping
+   - Masukkan username grup tujuan
+   - Sistem akan menambahkan member dengan delay otomatis
 
-2. **[ADDER]** Add members to your group
-   - Select a previously scraped members list
-   - Enter the destination group username
-   - The tool will handle delays and rate limits automatically
+3. **[LOGS]** - Melihat 100 aktivitas terakhir
+   - Menampilkan log detail dari setiap operasi
 
-3. **[LOGS]** View last 100 activities
-   - Shows recent operations and their results
+4. **[SHUTDOWN]** - Menghentikan aplikasi
 
-4. **[SHUTDOWN]** Stop application
+## ⚠️ Batasan dan Keamanan
 
-## Important Notes
+- Gunakan delay yang wajar untuk menghindari pemblokiran
+- Pastikan grup sumber adalah grup publik
+- Jangan menggunakan untuk spam atau aktivitas yang melanggar ToS Telegram
+- Backup data secara berkala
 
-- The tool implements smart delays to avoid Telegram's rate limits
-- Batch delays are added every 10 successful operations
-- Random delays between operations help avoid detection
-- All activities are logged for monitoring
+## 📁 Struktur Folder
 
-## License
+```
+culix-tools/
+├── config/         # File konfigurasi
+├── logs/          # File log
+├── output/        # Hasil scraping (CSV)
+├── telegram/      # Modul Telegram
+├── utils/         # Utilitas
+├── main.py        # File utama
+├── Dockerfile     # Konfigurasi Docker
+└── requirements.txt
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 🔧 Maintenance
 
-## Author
+### Backup Data
+Lakukan backup regular untuk folder:
+- `output/`: Hasil scraping
+- `logs/`: File log
+- `config/`: File konfigurasi
 
-ARXADEV 
+### Update Aplikasi
+```bash
+git pull origin main
+pip install -r requirements.txt
+```
+
+Jika menggunakan Docker:
+```bash
+docker build -t culix-tools .
+docker stop culix-tools
+docker rm culix-tools
+# Jalankan ulang container
+```
+
+## 🐛 Troubleshooting
+
+1. **FloodWaitError**
+   - Ini normal, aplikasi akan menunggu sesuai waktu yang ditentukan
+   - Pertimbangkan untuk menambah delay
+
+2. **Connection Error**
+   - Periksa koneksi internet
+   - Pastikan API ID dan Hash valid
+
+3. **Privacy Error**
+   - Beberapa user memiliki pengaturan privasi yang membatasi
+   - Aplikasi akan melewati user tersebut secara otomatis

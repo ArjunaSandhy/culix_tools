@@ -1,41 +1,24 @@
-# Git
 .git
 .gitignore
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
+__pycache__
+*.pyc
+*.pyo
+*.pyd
 .Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
-venv/
-ENV/
-
-# IDE
-.idea/
-.vscode/
-
-# Project specific
-sessions/
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache
+.env
+.venv
+.DS_Store
 output/
-logs/
-config/
-*.session
-*.session-journal 
+logs/ 
