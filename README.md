@@ -1,147 +1,72 @@
-# CULIX-TOOLS
+# CULIX TOOLS
 
-CULIX-TOOLS adalah aplikasi CLI (Command Line Interface) untuk manajemen grup Telegram yang memungkinkan Anda untuk mengumpulkan member dari grup publik dan menambahkan mereka ke grup Anda.
+Telegram member scraper dan adder tool dengan fitur otomatis.
 
-## 🚀 Fitur
+## Menjalankan dengan Docker
 
-- 📥 **Scraper Member**: Mengumpulkan member dari grup Telegram publik
-- 📤 **Adder Member**: Menambahkan member ke grup Anda secara otomatis
-- 📊 **Sistem Log**: Pencatatan aktivitas lengkap
-- 🔄 **Delay System**: Sistem delay pintar untuk menghindari batasan Telegram
-- 💻 **CLI Interface**: Antarmuka command line yang mudah digunakan
+### Prasyarat
+- Docker dan Docker Compose terinstall di VPS
+- Git (opsional)
 
-## 📋 Persyaratan
+### Langkah-langkah Instalasi
 
-- Python 3.9 atau lebih tinggi
-- Telethon
-- Rich
-- Pandas
-- InquirerPy
-
-## 🛠️ Instalasi
-
-### Menggunakan Python
-
-1. Clone repository:
+1. Clone atau upload kode ke VPS:
 ```bash
-git clone https://github.com/username/culix-tools.git
-cd culix-tools
+git clone <repository-url>
+cd culix
 ```
 
-2. Install dependencies:
+2. Siapkan file konfigurasi:
 ```bash
-pip install -r requirements.txt
+mkdir -p config logs output session
+# Pastikan untuk menempatkan file config.json di folder config/
 ```
 
-3. Jalankan aplikasi:
+3. Build dan jalankan container:
 ```bash
-python main.py
+docker-compose up -d --build
 ```
 
-### Menggunakan Docker
+### Monitoring dan Maintenance
 
-1. Build image:
+- Melihat logs aplikasi:
 ```bash
-docker build -t culix-tools .
+docker logs -f culix-tools
 ```
 
-2. Jalankan container:
+- Menghentikan aplikasi:
 ```bash
-docker run -d \
-  --name culix-tools \
-  --restart unless-stopped \
-  -v $(pwd)/output:/app/output \
-  -v $(pwd)/logs:/app/logs \
-  -v $(pwd)/config:/app/config \
-  culix-tools
+docker-compose down
 ```
 
-## 📝 Konfigurasi
-
-1. Buat file `config/config.json`:
-```json
-{
-    "api_id": "YOUR_API_ID",
-    "api_hash": "YOUR_API_HASH",
-    "phone": "YOUR_PHONE_NUMBER"
-}
-```
-
-2. Dapatkan `api_id` dan `api_hash` dari:
-   - Kunjungi https://my.telegram.org
-   - Login dan buat aplikasi baru
-   - Salin API ID dan API Hash
-
-## 💡 Penggunaan
-
-### Menu Utama
-1. **[SCRAPER]** - Mengumpulkan member dari grup
-   - Masukkan username grup (tanpa @)
-   - Hasil akan disimpan dalam format CSV di folder `output`
-
-2. **[ADDER]** - Menambahkan member ke grup
-   - Pilih file CSV hasil scraping
-   - Masukkan username grup tujuan
-   - Sistem akan menambahkan member dengan delay otomatis
-
-3. **[LOGS]** - Melihat 100 aktivitas terakhir
-   - Menampilkan log detail dari setiap operasi
-
-4. **[SHUTDOWN]** - Menghentikan aplikasi
-
-## ⚠️ Batasan dan Keamanan
-
-- Gunakan delay yang wajar untuk menghindari pemblokiran
-- Pastikan grup sumber adalah grup publik
-- Jangan menggunakan untuk spam atau aktivitas yang melanggar ToS Telegram
-- Backup data secara berkala
-
-## 📁 Struktur Folder
-
-```
-culix-tools/
-├── config/         # File konfigurasi
-├── logs/          # File log
-├── output/        # Hasil scraping (CSV)
-├── telegram/      # Modul Telegram
-├── utils/         # Utilitas
-├── main.py        # File utama
-├── Dockerfile     # Konfigurasi Docker
-└── requirements.txt
-```
-
-## 🔧 Maintenance
-
-### Backup Data
-Lakukan backup regular untuk folder:
-- `output/`: Hasil scraping
-- `logs/`: File log
-- `config/`: File konfigurasi
-
-### Update Aplikasi
+- Restart aplikasi:
 ```bash
-git pull origin main
-pip install -r requirements.txt
+docker-compose restart
 ```
 
-Jika menggunakan Docker:
+### Fitur Docker
+
+- Auto-restart jika aplikasi crash
+- Persistent storage untuk config, logs, output, dan session
+- Timezone disetel ke Asia/Jakarta
+- Resource isolation
+- Mudah di-update
+
+### Tips Penggunaan di VPS
+
+1. Gunakan screen atau tmux jika perlu mengakses console:
 ```bash
-docker build -t culix-tools .
-docker stop culix-tools
-docker rm culix-tools
-# Jalankan ulang container
+screen -S culix
+docker-compose up
+# Ctrl+A+D untuk detach
 ```
 
-## 🐛 Troubleshooting
+2. Cek status container:
+```bash
+docker ps
+```
 
-1. **FloodWaitError**
-   - Ini normal, aplikasi akan menunggu sesuai waktu yang ditentukan
-   - Pertimbangkan untuk menambah delay
-
-2. **Connection Error**
-   - Periksa koneksi internet
-   - Pastikan API ID dan Hash valid
-
-3. **Privacy Error**
-   - Beberapa user memiliki pengaturan privasi yang membatasi
-   - Aplikasi akan melewati user tersebut secara otomatis
+3. Backup data penting:
+```bash
+tar -czf backup.tar.gz config/ logs/ output/ session/
+``` 
