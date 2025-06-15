@@ -27,8 +27,9 @@ async def main():
             choices=[
                 Choice("1", "→ [SCRAPER] COLLECT MEMBERS FROM GROUP"),
                 Choice("2", "→ [ADDER] ADD MEMBERS TO YOUR GROUP"),
-                Choice("3", "→ [LOGS] VIEW LAST 100 ACTIVITIES"),
-                Choice("4", "→ [SHUTDOWN] STOP APPLICATION")
+                Choice("3", "→ [FILTER] FILTER MEMBERS NOT IN GROUP"),
+                Choice("4", "→ [LOGS] VIEW LAST 100 ACTIVITIES"),
+                Choice("5", "→ [SHUTDOWN] STOP APPLICATION")
             ],
             default="1"
         ).execute_async()
@@ -64,6 +65,27 @@ async def main():
             await wait_for_enter()
 
         elif choice == "3":
+            # Get available CSV files
+            csv_files = [f for f in os.listdir('output') if f.endswith('.csv')]
+            if not csv_files:
+                Display.print_error("No member lists available. Please collect members first")
+                await wait_for_enter()
+                continue
+
+            csv_file = await inquirer.select(
+                message="Select members list to filter:",
+                choices=csv_files
+            ).execute_async()
+
+            group_username = await inquirer.text(
+                message="Enter group username to check against (without @):",
+                validate=lambda x: len(x) > 0
+            ).execute_async()
+
+            await telegram.filter_members(group_username, f"output/{csv_file}")
+            await wait_for_enter()
+
+        elif choice == "4":
             await telegram.view_logs()
             await wait_for_enter()
 

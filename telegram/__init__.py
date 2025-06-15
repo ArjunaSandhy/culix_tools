@@ -1,5 +1,7 @@
-from .client import TelegramHandler
+from .handler import TelegramHandler
 from .scraper import Scraper
 from .adder import Adder
+from .filter import Filter
 
-__all__ = ['TelegramHandler', 'Scraper', 'Adder'] 
+
+__all__ = ['TelegramHandler', 'Scraper', 'Adder', 'Filter'] 
