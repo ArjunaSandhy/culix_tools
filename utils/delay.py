@@ -21,6 +21,54 @@ class BatchDelay:
             # Random delay between 120-180 seconds for each operation
             await Delay.random_delay(120, 180, use_spinner=True)  # 2-3 minutes
 
+class FloodControl:
+    def __init__(self):
+        self.flood_count = 0
+        self.last_flood_time = None
+        self.cooldown_base = 900  # 15 minutes base cooldown
+        self.max_retries = 3
+
+    def record_flood(self):
+        """Record a flood occurrence and get recommended wait time"""
+        current_time = time.time()
+        
+        # Reset flood count if last flood was more than 6 hours ago
+        if self.last_flood_time and (current_time - self.last_flood_time) > 21600:
+            self.flood_count = 0
+        
+        self.flood_count += 1
+        self.last_flood_time = current_time
+        
+        # Calculate progressive wait time
+        wait_time = self.cooldown_base * (2 ** (self.flood_count - 1))
+        return min(wait_time, 14400)  # Cap at 4 hours
+    
+    def should_stop(self):
+        """Determine if we should stop the process entirely"""
+        return self.flood_count >= self.max_retries
+
+    async def handle_flood_wait(self, seconds, use_spinner=True):
+        """Handle flood wait with progressive backoff"""
+        wait_time = self.record_flood()
+        
+        if self.should_stop():
+            Display.print_error("Too many flood controls triggered. Stopping for safety.")
+            return False
+            
+        Display.print_warning(f"Flood control triggered ({self.flood_count}/{self.max_retries})")
+        Display.print_warning(f"Taking an extended break: {wait_time//60} minutes")
+        
+        if use_spinner:
+            await Delay.spinner_countdown(wait_time, "Flood cooldown")
+        else:
+            with Progress() as progress:
+                task = progress.add_task("[yellow]Flood cooldown...", total=wait_time)
+                for _ in range(wait_time):
+                    await asyncio.sleep(1)
+                    progress.update(task, advance=1)
+        
+        return True
+
 class Delay:
     @staticmethod
     async def spinner_countdown(seconds, message="Waiting"):

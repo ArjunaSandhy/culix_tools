@@ -13,7 +13,7 @@ from telethon.errors import (
     ChatWriteForbiddenError,
     UserAlreadyParticipantError
 )
-from utils import Display, Logger, Delay, BatchDelay
+from utils import Display, Logger, Delay, BatchDelay, FloodControl
 from datetime import datetime
 
 class Adder:
@@ -21,6 +21,7 @@ class Adder:
         self.client = client
         self.logger = logger or Logger()
         self.batch_delay = BatchDelay(batch_size=5)
+        self.flood_control = FloodControl()
 
     async def is_user_in_group(self, user_username, target_group):
         """Check if user is already in the group"""
@@ -104,24 +105,33 @@ class Adder:
                     continue
                     
                 except PeerFloodError:
-                    log_msg = f"Flood control triggered - stopping process"
-                    self.logger.log(log_msg, "ERROR")
-                    Display.print_error(log_msg)
-                    break
+                    log_msg = f"Flood control triggered - attempting recovery"
+                    self.logger.log(log_msg, "WARNING")
+                    Display.print_warning(log_msg)
                     
-                except FloodWaitError as e:
-                    wait_time = e.seconds
-                    if wait_time < 3600:  # If wait time is less than 1 hour
-                        log_msg = f"FloodWaitError: Need to wait {wait_time} seconds"
-                        self.logger.log(log_msg, "WARNING")
-                        Display.print_warning(log_msg)
-                        await Delay.flood_wait(wait_time, use_spinner=True)
-                        continue
-                    else:
-                        log_msg = f"FloodWaitError: Wait time too long ({wait_time} seconds) - stopping process"
+                    # Handle with flood control system
+                    can_continue = await self.flood_control.handle_flood_wait(300)  # Start with 5 minutes
+                    if not can_continue:
+                        log_msg = "Too many flood controls - stopping for safety"
                         self.logger.log(log_msg, "ERROR")
                         Display.print_error(log_msg)
                         break
+                    continue
+                    
+                except FloodWaitError as e:
+                    wait_time = e.seconds
+                    log_msg = f"FloodWaitError: Need to wait {wait_time} seconds"
+                    self.logger.log(log_msg, "WARNING")
+                    Display.print_warning(log_msg)
+                    
+                    # Use flood control system for handling
+                    can_continue = await self.flood_control.handle_flood_wait(wait_time)
+                    if not can_continue:
+                        log_msg = "Too many flood controls - stopping for safety"
+                        self.logger.log(log_msg, "ERROR")
+                        Display.print_error(log_msg)
+                        break
+                    continue
                     
                 except (UserNotMutualContactError, ChatWriteForbiddenError) as e:
                     failed += 1
